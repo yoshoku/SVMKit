@@ -88,8 +88,7 @@ module Rumale
         return put_leaf(node, y) if stop_growing?(y)
 
         # calculate optimal parameters.
-        feature_id, left_imp, right_imp, threshold, gain =
-          rand_ids.map { |n| [n, *best_split(x[true, n], y, impurity)] }.max_by(&:last)
+        feature_id, left_imp, right_imp, threshold, gain = find_best_split(x, y, impurity)
 
         return put_leaf(node, y) if gain.nil? || gain.zero?
 
@@ -116,6 +115,10 @@ module Rumale
 
       def rand_ids
         @feature_ids.sample(@params[:max_features], random: @sub_rng)
+      end
+
+      def find_best_split(x, y, impurity)
+        rand_ids.map { |n| [n, *best_split(x[true, n], y, impurity)] }.max_by(&:last)
       end
 
       def best_split(_features, _y, _impurity)
